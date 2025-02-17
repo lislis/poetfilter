@@ -9,8 +9,7 @@
  let { poets, columns } = storeToRefs(store);
  const { fetchPoets, filterPoets } = store;
 
- const cols2Display = ['name', 'city', 'country', 'website', 'facebook', 'alpha', 'pronouns', 'instagram', 'twitter', 'tiktok'];
-
+ const cols2Display = window.poetfilterData.cols2Display;
  const filters = cols2Display.reduce((acc,curr)=> (acc[curr]='',acc),{});
 
  function filterMe(ev) {

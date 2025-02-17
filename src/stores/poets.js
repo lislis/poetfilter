@@ -8,7 +8,9 @@ export const usePoetStore = defineStore('poets', () => {
   let columns = ref([]);
 
   function fetchPoets() {
-    Papa.parse('/data/alphas20241211.csv', {
+    // dev
+    // /data/alphas20241211.csv
+    Papa.parse(window.poetfilterData.dataUrl, {
       download: true,
       header: true,
       complete: (results) => {

@@ -1,5 +1,5 @@
 export function hasFilter(columnName) {
-  const allowList = ["name", "city", "instagram"];
+  const allowList = window.poetfilterData.cols2Filter;
   return allowList.includes(columnName);
 }
 
