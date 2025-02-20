@@ -4,6 +4,7 @@
  import {onMounted, computed, reactive} from 'vue'
  import { hasFilter, isAlpha, hasWebsite, hasInsta, hasX, hasTiktok  } from '@/utils';
  import FilterHeader from '@/components/FilterHeader.vue';
+ import SinglePoet from '@/components/SinglePoet.vue';
 
  const store = usePoetStore();
  let { poets, columns } = storeToRefs(store);
@@ -11,6 +12,8 @@
 
  const cols2Display = window.poetfilterData.cols2Display;
  const filters = cols2Display.reduce((acc,curr)=> (acc[curr]='',acc),{});
+
+ const cols2Filter = window.poetfilterData.cols2Filter;
 
  function filterMe(ev) {
      const fieldName = ev.target.name;
@@ -30,37 +33,43 @@
     <main>
         <div v-if="poets">
 
-            <table>
-                <thead>
-                    <tr>
-                        <template v-for="column in columns" >
-                            <th v-if="cols2Display.includes(column)">
-                                <FilterHeader :column="column" @filterFunc="filterMe"  />
-                            </th>
-                        </template>
-                    </tr>
-                </thead>
-
-                <tbody v-if="poets.length">
-                    <tr v-for="poet in poets">
-                        <td>{{ poet.name }}</td>
-                        <td>{{ poet.city }}</td>
-                        <td>{{ poet.country }}</td>
-                        <td v-html="hasWebsite(poet.website)"></td>
-                        <td>{{ isAlpha(poet.alpha) }}</td>
-                        <td>{{ poet.pronouns }}</td>
-                        <td v-html="hasInsta(poet.instagram)"></td>
-                        <td v-html="hasX(poet.twitter)"></td>
-                        <td v-html="hasTiktok(poet.tiktok)"></td>
-                    </tr>
-                </tbody>
-                <tbody v-else>
-                    <tr>Keine Poet*innen gefunden</tr>
-                </tbody>
-            </table>
+            <div class="pf-table">
+                <div class="pf-tableheader">
+                    <div v-for="col in cols2Filter">
+                        <FilterHeader :column="columns[columns.indexOf(col)]" @filterFunc="filterMe" />
+                    </div>
+                </div>
+                <ol class="pf-tablebody" v-if="poets.length">
+                    <li class="pf-tableitem" v-for="poet in poets">
+                        <SinglePoet :poet="poet" />
+                    </li>
+                </ol>
+                <div v-else>Keine Poet*innen gefunden.</div>
+            </div>
         </div>
         <div v-else>
             <p>Laden</p>
         </div>
     </main>
 </template>
+
+<style scoped>
+ .pf-tableheader {
+     display: grid;
+     grid-template-columns: 1fr 1fr 1fr;
+     grid-auto-columns: 1fr;
+ }
+ .pf-tablebody {
+     list-style: none;
+     margin: 0;
+     padding: 0;
+ }
+ .pf-tableheader {
+     padding: 1em;
+     font-weight: bold;
+     text-transform: uppercase;
+ }
+ .pf-tableitem {
+     border-bottom: 2px solid black;
+ }
+</style>
