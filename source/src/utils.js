@@ -46,3 +46,23 @@ export function fieldFormating(colName, value) {
 
   return out;
 }
+
+export function formatJobs(value) {
+  if (value == "[]") return;
+   
+  const dict = {
+    0: "Poet*in",
+    1: "Veranstalter*in",
+    2: "Moderator*in",
+    3: "Featured Artist"
+  }
+
+  try {
+    return JSON.parse(value)
+      .filter(x => x.length >= 1)
+      .map(x => dict[x]).join(", ")  
+  } catch {
+    console.log(value)
+  }
+  
+}

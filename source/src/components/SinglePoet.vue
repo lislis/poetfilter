@@ -1,5 +1,5 @@
 <script>
- import { fieldFormating } from '@/utils';
+ import { fieldFormating, formatJobs } from '@/utils';
 
  export default {
      props: ['poet'],
@@ -16,13 +16,30 @@
          },
          fieldFormating(col, val) {
              return fieldFormating(col, val);
+         },
+         isJob(col) {
+             return col === "bookable_as";
+         },
+         formatJobs(val) {
+             return formatJobs(val);
          }
+         
+     },
+     computed: {
+         
      }
  }
 </script>
 <template>
     <header @click="toggling">
-        <div v-for="col in cols2Filter">{{poet[col]}}</div>
+        <div v-for="col in cols2Filter">
+            <template v-if="isJob(col)">
+                {{formatJobs(poet[col])}}
+            </template>
+            <template v-else>
+                {{poet[col]}}
+            </template>
+        </div>
     </header>
     <div class="pf-hidden" v-if="toggle">
         <span class="pf-bits"
@@ -34,7 +51,7 @@
 <style scoped>
  .pf-tableitem header {
      display: grid;
-     grid-template-columns: 1fr 1fr 1fr;
+     grid-template-columns: 1fr 1fr 1fr 1fr;
      grid-auto-columns: 1fr;
  }
  header:hover {

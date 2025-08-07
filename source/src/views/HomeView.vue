@@ -56,7 +56,7 @@
 <style scoped>
  .pf-tableheader {
      display: grid;
-     grid-template-columns: 1fr 1fr 1fr;
+     grid-template-columns: 1fr 1fr 1fr 1fr;
      grid-auto-columns: 1fr;
  }
  .pf-tablebody {
