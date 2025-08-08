@@ -7,7 +7,12 @@
      data() {
          return {
              toggle: true,
+             jobDict: {},
          }
+     },
+     mounted() {
+         this.jobDict = {}
+         window.poetfilterData.jobDict.map((x, ind) => this.jobDict[ind] = x)
      },
      methods: {
          filterFunc(ev) {
@@ -15,6 +20,9 @@
          },
          toggleMe() {
              this.toggle = !this.toggle;
+         },
+         filterJobs(ev) {
+             this.$emit('filterJob', ev.target.dataset.value); 
          }
      },
      computed: {
@@ -30,21 +38,28 @@
 </script>
 
 <template>
-    {{ column }}
+    <span>{{ column }}</span>
     <template v-if="isFilter">
         <template v-if="isJobCol">
-            <button @click="toggleMe" :title="`${column} Optionen ausklappen`">👇</button>
-            
-            <div v-if="toggle">
-            <label><input type="checkbox" name="poet" data-value="0">Poet*in</label><br>
-            <label><input type="checkbox" name="orga" data-value="1">Veranstalter*in</label><br>
-            <label><input type="checkbox" name="mc" data-value="2">Moderator*in</label><br>
-            <label><input type="checkbox" name="feat" data-value="3">Featured Artist</label>
+            <button @click="toggleMe" :title="`${column} Optionen ausklappen`">
+                <span v-if="toggle">👇</span>
+                <span v-else>👍</span>
+            </button>
+            <div v-if="!toggle && jobDict">
+                <template  v-for="([key, value], index) in Object.entries(jobDict)">
+                <label><input type="checkbox" :name="value" :data-value="key" @change="filterJobs">{{value}}</label><br>
+                </template>
             </div>
         </template>
         <template v-else>
-            <button v-if="toggle" @click="toggleMe" :title="`Filter Spalte ${column}`">🔍</button>
-            <input v-else type="text" :name="column" @input="filterFunc" @blur="toggleMe" />
+            <button @click="toggleMe" :title="`Filter Spalte ${column}`">
+                <span v-if="toggle">👇</span>
+                <span v-else>👍</span>
+            </button>
+            <div v-if="!toggle">
+                <input type="text" :name="column" @input="filterFunc" />
+            </div>
+            
         </template>
     </template>
     

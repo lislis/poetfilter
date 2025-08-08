@@ -6,7 +6,9 @@ export const usePoetStore = defineStore('poets', () => {
   let original = ref([]);
   let poets = ref([]);
   let columns = ref([]);
-
+  let jobs = new Set();
+  let columnSearch = new Map();
+  
   function fetchPoets() {
     // dev
     // /data/alphas20241211.csv
@@ -15,20 +17,60 @@ export const usePoetStore = defineStore('poets', () => {
       header: true,
       complete: (results) => {
         let r = results.data.filter(x => x['id'] != "");
+        r.map(x => {
+          try {
+            x.bookable_as = JSON.parse(x.bookable_as);
+          } catch {
+            x.bookable_as = [];
+          }
+          return x;
+        })
         original.value = r;
         poets.value = r;
+
         columns.value = results.meta.fields;
       }
     });
   }
 
-  function filterPoets(column, filter) {
+  function metaFilter() {
     poets.value = original.value
-      .filter(x => Object.keys(x).includes(column))
-      .filter(x => x[column].toLowerCase().includes(filter));
-
-    if (filter.length == 0) poets.value = original.value;
+      .filter(x => {
+        if (jobs.size > 0) {
+          return x.bookable_as.some(r => Array.from(jobs).includes(r))
+        } else {
+          return true
+        }
+      }).filter(x => {
+        if (columnSearch.size > 0) {
+          return columnSearch.entries().some(([index, value]) => {
+            return x[index].toLowerCase().includes(value);
+          })
+        } else {
+          return true
+        }
+      })
   }
 
-  return { poets, columns, fetchPoets, filterPoets }
+  function filterPoets(column, myfilter) {
+    if (myfilter.length == 0) {
+      columnSearch.delete(column);
+    } else {
+      columnSearch.set(column, myfilter);
+    }
+    
+    metaFilter();
+  }
+
+  function filterPoetsByJob(index) {
+    if (jobs.has(index)) {
+      jobs.delete(index);      
+    } else {
+      jobs.add(index);      
+    }
+
+    metaFilter();
+  }
+
+  return { poets, columns, fetchPoets, filterPoets, filterPoetsByJob }
 })

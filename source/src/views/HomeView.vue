@@ -8,12 +8,13 @@
 
  const store = usePoetStore();
  let { poets, columns } = storeToRefs(store);
- const { fetchPoets, filterPoets } = store;
+ const { fetchPoets, filterPoets, filterPoetsByJob } = store;
 
  const cols2Display = window.poetfilterData.cols2Display;
  const filters = cols2Display.reduce((acc,curr)=> (acc[curr]='',acc),{});
 
  const cols2Filter = window.poetfilterData.cols2Filter;
+ const jobDict = window.poetfilterData.jobDict;
 
  function filterMe(ev) {
      const fieldName = ev.target.name;
@@ -22,9 +23,13 @@
      filterPoets(fieldName, fieldValue);
  }
 
+ function filterJob(dictIndex) {
+     filterPoetsByJob(dictIndex);
+ }
+
  onMounted(() => {
      fetchPoets();
-     console.log(columns)
+     //console.log(columns)
  })
 
 </script>
@@ -32,11 +37,12 @@
 <template>
     <main>
         <div v-if="poets">
-
             <div class="pf-table">
                 <div class="pf-tableheader">
                     <div v-for="col in cols2Filter">
-                        <FilterHeader :column="columns[columns.indexOf(col)]" @filterFunc="filterMe" />
+                        <FilterHeader :column="columns[columns.indexOf(col)]"
+                                     @filterFunc="filterMe"
+                                     @filterJob="filterJob" />
                     </div>
                 </div>
                 <ol class="pf-tablebody" v-if="poets.length">

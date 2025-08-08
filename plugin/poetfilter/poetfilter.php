@@ -3,13 +3,13 @@
    Plugin Name:  Poetfilter
    Plugin URI:
    Description:  Small plugin for filtering poets
-   Version:      1.0
+   Version:      2.0.3
    Author:       lislis
    Author URI:   lislis.xyz
    Text Domain:  poetfilter
  */
 
-define("POETFILTER_VERSION", '1.0.0');
+define("POETFILTER_VERSION", '2.0.3');
 
 function poetfilter_activate() {
 
@@ -40,6 +40,9 @@ add_action( 'admin_init', 'load_poet_plugin' );
 function poetfilter_register_script() {
     wp_register_script('poetfilter-script', plugin_dir_url(__DIR__) . 'poetfilter/index.js', array(), POETFILTER_VERSION, true);
 
+    wp_enqueue_style( 'poetfilter-style', plugin_dir_url(__DIR__) . 'poetfilter/index.css', array(), POETFILTER_VERSION );
+
+
     global $post;
     // and add globals
     wp_localize_script(
@@ -51,8 +54,9 @@ function poetfilter_register_script() {
             'plugin_url' => plugin_dir_url( __DIR__ ),
             'app_path' => $post->post_name,
             'dataUrl' => get_option('poetfilter_csv_url'),
-            'cols2Display' => explode(",", get_option('poetfilter_filter_columns')),
-            'cols2Filter' => explode(",", get_option('poetfilter_display_columns')),
+            'cols2Display' => explode(",", get_option('poetfilter_display_columns')),
+            'cols2Filter' => explode(",", get_option('poetfilter_filter_columns')),
+            'jobDict' => explode(",", get_option('poetfilter_job_names')),
         )
     );
     wp_enqueue_script('poetfilter-script');
@@ -97,6 +101,11 @@ function poetfilter_display_columns_display() { ?>
 <?php
 }
 
+function poetfilter_job_names_display() { ?>
+    <input type="text" name="poetfilter_job_names" id="poetfilter_job_names" value="<?php echo get_option('poetfilter_job_names'); ?>" />
+<?php
+        }
+
 
 function poetfilter_settings() {
     add_settings_section( 'poetfilter_page', 'CSV Einstellungen',
@@ -110,6 +119,9 @@ function poetfilter_settings() {
 
     add_settings_field("poetfilter_display_columns", "Spalten in Detailansicht (Komma separiert)", "poetfilter_display_columns_display", "poetfilter-settings", "poetfilter_page");
     register_setting( 'poetfilter-settings-grp', 'poetfilter_display_columns');
+
+    add_settings_field("poetfilter_job_names", "'Buchbar als' Jobnamen (Format beachten!)", "poetfilter_job_names_display", "poetfilter-settings", "poetfilter_page");
+    register_setting( 'poetfilter-settings-grp', 'poetfilter_job_names');
 }
 add_action('admin_init','poetfilter_settings');
 

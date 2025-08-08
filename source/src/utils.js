@@ -48,21 +48,18 @@ export function fieldFormating(colName, value) {
 }
 
 export function formatJobs(value) {
-  if (value == "[]") return;
+  if (value.length == 0) return;
    
-  const dict = {
-    0: "Poet*in",
-    1: "Veranstalter*in",
-    2: "Moderator*in",
-    3: "Featured Artist"
-  }
+  if (!window.poetfilterData.jobDict) return;
+  let dict = window.poetfilterData.jobDict;
 
   try {
-    return JSON.parse(value)
+    return value
       .filter(x => x.length >= 1)
-      .map(x => dict[x]).join(", ")  
+      .map(x => dict[x])
+      .join(", ");
   } catch {
-    console.log(value)
+    
   }
-  
+    
 }
